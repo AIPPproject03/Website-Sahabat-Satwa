@@ -302,7 +302,7 @@ ul li a:hover {
 .actions {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .actions .btn {
@@ -317,6 +317,14 @@ ul li a:hover {
 .actions .btn:hover {
   background-color: #388e3c;
   transform: scale(1.05);
+}
+
+.actions .btn-back {
+  background-color: #f44336; /* Warna merah untuk tombol kembali */
+}
+
+.actions .btn-back:hover {
+  background-color: #d32f2f; /* Warna merah lebih gelap saat hover */
 }
 
 /* No Data Message */

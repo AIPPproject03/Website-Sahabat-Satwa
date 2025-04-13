@@ -122,3 +122,15 @@ tableRows.forEach((row) => {
     row.style.transition = "background-color 0.3s ease";
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const navbar = document.querySelector(".navbar");
+
+  window.addEventListener("scroll", function () {
+    if (window.scrollY > 0) {
+      navbar.classList.add("sticky");
+    } else {
+      navbar.classList.remove("sticky");
+    }
+  });
+});
