@@ -29,18 +29,22 @@ table {
   border-collapse: collapse;
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 table th,
 table td {
   border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
+  padding: 10px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
 table th {
-  background-color: #81c784; /* Warna hijau terang */
+  background-color: #4caf50;
   color: white;
+  font-weight: bold;
 }
 
 table tr:nth-child(even) {
@@ -48,7 +52,7 @@ table tr:nth-child(even) {
 }
 
 table tr:hover {
-  background-color: #c8e6c9; /* Warna hijau lembut */
+  background-color: #f1f1f1;
 }
 
 /* Button Styles */
@@ -330,7 +334,7 @@ ul li a:hover {
 /* No Data Message */
 .no-data {
   text-align: center;
-  font-size: 18px;
+  font-size: 16px;
   color: #666;
   margin-top: 20px;
 }
@@ -448,4 +452,69 @@ ul li a:hover {
   background-color: #4caf50;
   color: white;
   margin-top: 20px;
+}
+
+/* Dashboard Section */
+.dashboard-section {
+  padding: 50px 20px;
+  background-color: #f9f9f9;
+  margin-bottom: 20px;
+}
+
+.dashboard-section h1 {
+  text-align: center;
+  color: #2e7d32;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+table th,
+table td {
+  padding: 10px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+table th {
+  background-color: #4caf50;
+  color: white;
+  font-weight: bold;
+}
+
+table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.no-data {
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.btn {
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  color: white;
+  background-color: #4caf50;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #388e3c;
+}
+
+.btn-add {
+  margin-bottom: 20px;
+  display: inline-block;
 }
