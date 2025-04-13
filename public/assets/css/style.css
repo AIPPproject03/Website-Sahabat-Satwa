@@ -1,0 +1,345 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f9f4;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h3 {
+  color: #2e7d32;
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: #0b500f;
+  font-weight: bold;
+}
+
+a:hover {
+  color: #24d330;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+table th {
+  background-color: #81c784; /* Warna hijau terang */
+  color: white;
+}
+
+table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+table tr:hover {
+  background-color: #c8e6c9; /* Warna hijau lembut */
+}
+
+/* Button Styles */
+button,
+.btn {
+  background-color: #4caf50; /* Warna hijau utama */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover,
+.btn:hover {
+  background-color: #388e3c; /* Warna hijau lebih gelap */
+  transform: scale(1.05);
+}
+
+button:active,
+.btn:active {
+  transform: scale(0.95);
+}
+
+/* Tombol dengan Ikon */
+.btn-add {
+  background-color: #4caf50;
+}
+
+.btn-add:hover {
+  background-color: #388e3c;
+}
+
+.btn-edit {
+  background-color: #2196f3;
+}
+
+.btn-edit:hover {
+  background-color: #1976d2;
+}
+
+.btn-delete {
+  background-color: #f44336;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
+}
+
+.btn-back {
+  background-color: #9e9e9e;
+}
+
+.btn-back:hover {
+  background-color: #757575;
+}
+
+/* Form Styles */
+form {
+  width: 50%;
+  margin: 20px auto;
+  padding: 50px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+form input:focus,
+form select:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+/* Navigation Styles */
+ul {
+  list-style: none;
+  padding: 0;
+  text-align: center;
+}
+
+ul li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+ul li a {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+ul li a:hover {
+  background-color: #388e3c;
+}
+
+/* Loading Animation */
+.loading {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+}
+
+.loading-text span {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #4caf50;
+  animation: bounce 1.5s infinite;
+}
+
+.loading-text span:nth-child(1) {
+  animation-delay: 0s;
+}
+.loading-text span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.loading-text span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.loading-text span:nth-child(4) {
+  animation-delay: 0.6s;
+}
+.loading-text span:nth-child(5) {
+  animation-delay: 0.8s;
+}
+.loading-text span:nth-child(6) {
+  animation-delay: 1s;
+}
+.loading-text span:nth-child(7) {
+  animation-delay: 1.2s;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.loading-dots {
+  margin-top: 20px;
+  font-size: 30px;
+  animation: fade 1.5s infinite;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Menu Styles */
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 20px auto;
+  width: 300px; /* Lebar menu lebih kecil */
+}
+
+.menu-item {
+  position: relative;
+  width: 100%;
+  margin: 10px 0;
+  background-color: #4caf50; /* Warna hijau utama */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: visible; /* Pastikan elemen anak terlihat */
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.menu-item a {
+  display: block; /* Membuat seluruh area menu-item dapat diklik */
+  padding: 15px;
+  color: white;
+  text-decoration: none;
+  position: relative;
+}
+
+.menu-item:hover {
+  background-color: #388e3c; /* Warna hijau lebih gelap */
+  transform: translateX(-10px); /* Geser sedikit ke kiri */
+}
+
+/* Informasi yang keluar */
+.menu-item .popup-info {
+  position: absolute;
+  top: 0;
+  left: 100%; /* Awalnya tersembunyi di sebelah kanan */
+  transform: translateX(-100%); /* Geser ke dalam frame */
+  width: 250px;
+  padding: 15px;
+  background-color: #ffffff; /* Warna kertas putih */
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none; /* Tidak bisa diklik saat tersembunyi */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.menu-item:hover .popup-info,
+.menu-item:focus-within .popup-info {
+  opacity: 1;
+  transform: translateX(0); /* Animasi keluar ke kanan */
+  pointer-events: auto; /* Aktifkan interaksi */
+}
+
+/* Container Styles */
+.container {
+  width: 90%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Actions Styles */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.actions .btn {
+  text-decoration: none;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.actions .btn:hover {
+  background-color: #388e3c;
+  transform: scale(1.05);
+}
+
+/* No Data Message */
+.no-data {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  margin-top: 20px;
+}
+
+/* Button Styles for Edit and Delete */
+.btn-edit {
+  background-color: #2196f3;
+}
+
+.btn-edit:hover {
+  background-color: #1976d2;
+}
+
+.btn-delete {
+  background-color: #f44336;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
+}
