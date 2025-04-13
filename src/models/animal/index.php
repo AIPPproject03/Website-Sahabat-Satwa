@@ -35,7 +35,7 @@ $result = $conn->query($sql);
             <a href="create.php" class="btn btn-add">
                 <span class="icon">➕</span> Tambah Hewan Baru
             </a>
-            <a href="../../app.php" class="btn btn-back">
+            <a href="../../pages/dashboard_admin.php" class="btn btn-back">
                 <span class="icon">🏠</span> Kembali ke Menu Utama
             </a>
         </div>

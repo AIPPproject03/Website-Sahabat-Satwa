@@ -1,0 +1,227 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f9f4;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3 {
+  color: #46c94d;
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: #0b500f;
+  font-weight: bold;
+}
+
+a:hover {
+  color: #24d330;
+}
+
+/* Navbar Styles */
+.navbar {
+  background-color: #4caf50;
+  padding: 10px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.navbar-menu {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-menu li a {
+  color: white;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.navbar-menu li a:hover {
+  color: #c8e6c9;
+}
+
+/* Hero Section */
+.hero {
+  position: relative;
+  height: 100vh; /* Hero section memenuhi tinggi layar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Gambar memenuhi area tanpa terdistorsi */
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2; /* Konten berada di atas gambar */
+  text-align: center;
+  color: white;
+  max-width: 600px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5); /* Latar belakang transparan untuk teks */
+  border-radius: 10px;
+}
+
+.hero-content h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.hero-content p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.hero-content .btn-primary {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.hero-content .btn-primary:hover {
+  background-color: #388e3c;
+}
+
+/* Section Styles */
+section {
+  padding: 50px 20px;
+}
+
+.about-section,
+.features-section,
+.login-section {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  max-width: 1200px;
+}
+
+/* Features Section */
+.features-section {
+  padding: 50px 20px;
+  background-color: #ffffff;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.feature-item {
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.feature-image img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover; /* Gambar memenuhi area tanpa terdistorsi */
+}
+
+.feature-item h3 {
+  font-size: 20px;
+  margin: 15px 0 10px;
+  color: #2e7d32;
+}
+
+.feature-item p {
+  font-size: 14px;
+  color: #666;
+  padding: 0 10px 15px;
+}
+
+/* Login Form */
+.login-section p {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-form {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.login-form button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.login-form button:hover {
+  background-color: #388e3c;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #4caf50;
+  color: white;
+}
+
+.footer a {
+  color: #c8e6c9;
+}
+
+.footer a:hover {
+  color: white;
+}

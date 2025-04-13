@@ -343,3 +343,101 @@ ul li a:hover {
 .btn-delete:hover {
   background-color: #d32f2f;
 }
+
+/* Navbar Styles */
+.navbar {
+  background-color: #4caf50;
+  padding: 10px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.navbar-menu {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-menu li a {
+  color: white;
+  font-size: 16px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.navbar-menu li a:hover {
+  color: #c8e6c9;
+}
+
+/* Dashboard Section */
+.tables-section {
+  padding: 50px 20px;
+  background-color: #f9f9f9;
+}
+
+.tables-section h1 {
+  text-align: center;
+  color: #2e7d32;
+  margin-bottom: 20px;
+}
+
+.tables-section p {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.menu-item {
+  text-align: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.menu-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.menu-item a {
+  text-decoration: none;
+  color: #2e7d32;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.menu-item .popup-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #4caf50;
+  color: white;
+  margin-top: 20px;
+}
