@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 13 Apr 2025 pada 12.18
+-- Waktu pembuatan: 14 Apr 2025 pada 17.44
 -- Versi server: 10.4.28-MariaDB
 -- Versi PHP: 8.2.4
 
@@ -40,7 +40,7 @@ CREATE TABLE `animal` (
 --
 
 INSERT INTO `animal` (`animal_id`, `animal_name`, `animal_born`, `owner_id`, `at_id`) VALUES
-(1, 'Kitty', '2020-01-01', 2, 1),
+(1, 'Kity', '2020-01-01', 2, 1),
 (2, 'Rex', '2020-02-02', 1, 7),
 (3, 'Bobi', '2020-03-03', 4, 2),
 (4, 'Hamtaro', '2020-04-04', 5, 3),
@@ -98,7 +98,8 @@ INSERT INTO `animal_type` (`at_id`, `at_description`) VALUES
 (4, 'Hamster'),
 (5, 'Burung'),
 (6, 'Ikan'),
-(7, 'Reptil');
+(7, 'Reptil'),
+(8, 'Dinosaurus');
 
 --
 -- Trigger `animal_type`
@@ -152,8 +153,22 @@ INSERT INTO `audit_log` (`log_id`, `user`, `action`, `timestamp`) VALUES
 (9, 'root@localhost', 'Updated animal: Kity', '2025-04-13 16:25:06'),
 (21, 'root@localhost', 'Inserted new animal: Uma lah', '2025-04-13 16:56:44'),
 (22, 'root@localhost', 'Deleted animal: Uma lah', '2025-04-13 16:56:58'),
-(23, 'root@localhost', 'Updated animal: Kity', '2025-04-13 17:03:41'),
-(24, 'root@localhost', 'Updated animal: Kitty', '2025-04-13 17:03:46');
+(30, 'root@localhost', 'Updated visit: 1', '2025-04-14 19:24:17'),
+(31, 'superadmin@localhost', 'Updated animal: Kity', '2025-04-14 19:40:46'),
+(32, 'ria@localhost', 'Updated visit drug: 1 - 1', '2025-04-14 19:45:24'),
+(33, 'superadmin@localhost', 'Inserted new animal type: 8', '2025-04-14 20:14:39'),
+(34, 'ria@localhost', 'Updated visit drug: 1 - 1', '2025-04-14 20:15:31'),
+(35, 'ria@localhost', 'Updated visit drug: 1 - 1', '2025-04-14 20:33:28'),
+(36, 'superadmin@localhost', 'Updated visit drug: 1 - 1', '2025-04-14 21:27:16'),
+(37, 'ria@localhost', 'Updated visit: 1', '2025-04-14 21:43:18'),
+(38, 'superadmin@localhost', 'Updated visit: 1', '2025-04-14 21:45:27'),
+(39, 'root@localhost', 'Inserted new owner: 7', '2025-04-14 22:10:29'),
+(40, 'root@localhost', 'Deleted owner: 7', '2025-04-14 22:21:29'),
+(41, 'root@localhost', 'Inserted new owner: 8', '2025-04-14 22:21:47'),
+(42, 'ria@localhost', 'Updated visit: 11', '2025-04-14 22:33:38'),
+(43, 'ria@localhost', 'Inserted new visit: 12', '2025-04-14 22:39:25'),
+(44, 'superadmin@localhost', 'Deleted visit: 12', '2025-04-14 22:40:24'),
+(45, 'abil@localhost', 'Updated visit: 1', '2025-04-14 22:42:21');
 
 -- --------------------------------------------------------
 
@@ -285,7 +300,8 @@ INSERT INTO `owners` (`owner_id`, `owner_givenname`, `owner_familyname`, `owner_
 (3, 'Cindy', 'Wijaya', 'Jl. Samudera No. 03', '081234567892', ''),
 (4, 'Dodi', 'Saputra', 'Jl. RTA No. 08', '081234567893', ''),
 (5, 'Eva', 'Sari', 'Jl. Borneo No. 19', '081234567894', ''),
-(6, 'Fandi', 'Wijaya', 'Jl. Kamboja No. 25', '081234567895', '');
+(6, 'Fandi', 'Wijaya', 'Jl. Kamboja No. 25', '081234567895', ''),
+(8, 'Irwin', 'Putra', 'BTN Kumai Damai', '082254892043', '');
 
 --
 -- Trigger `owners`
@@ -368,6 +384,13 @@ CREATE TABLE `spec_visit` (
   `vet_id` int(11) NOT NULL,
   `sv_count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `spec_visit`
+--
+
+INSERT INTO `spec_visit` (`clinic_id`, `vet_id`, `sv_count`) VALUES
+(1, 1, 3);
 
 --
 -- Trigger `spec_visit`
@@ -478,7 +501,7 @@ INSERT INTO `visit` (`visit_id`, `visit_date_time`, `visit_notes`, `animal_id`, 
 (8, '2025-01-15', 'Kelinci Hamtara periksa kutu', 8, 2, NULL),
 (9, '2025-01-22', 'Burung Kiki kontrol kesehatan', 4, 4, 4),
 (10, '2025-01-25', 'Kucing Grey Lanjut Tes Kesehatan', 7, 1, 7),
-(11, '2025-03-01', 'Kucing Kity sakit mata', 1, 1, NULL);
+(11, '2025-03-01', 'Kucing Kity sakit mata gajah', 1, 1, NULL);
 
 --
 -- Trigger `visit`
@@ -667,19 +690,19 @@ ALTER TABLE `animal`
 -- AUTO_INCREMENT untuk tabel `animal_type`
 --
 ALTER TABLE `animal_type`
-  MODIFY `at_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `at_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT untuk tabel `clinic`
 --
 ALTER TABLE `clinic`
-  MODIFY `clinic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `clinic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `drug`
@@ -691,7 +714,7 @@ ALTER TABLE `drug`
 -- AUTO_INCREMENT untuk tabel `owners`
 --
 ALTER TABLE `owners`
-  MODIFY `owner_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `owner_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `specialisation`
@@ -709,7 +732,7 @@ ALTER TABLE `vet`
 -- AUTO_INCREMENT untuk tabel `visit`
 --
 ALTER TABLE `visit`
-  MODIFY `visit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `visit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
