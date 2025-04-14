@@ -126,6 +126,40 @@ a:hover {
   background-color: #388e3c;
 }
 
+/* Gaya untuk tombol di Hero Section */
+.hero-buttons {
+  display: flex;
+  justify-content: center; /* Pusatkan tombol secara horizontal */
+  gap: 20px; /* Tambahkan jarak antar tombol */
+  margin-top: 20px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-decoration: none;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #4caf50; /* Hijau */
+}
+
+.btn-primary:hover {
+  background-color: #45a049;
+}
+
+.btn-secondary {
+  background-color: #2196f3; /* Biru */
+}
+
+.btn-secondary:hover {
+  background-color: #1e88e5;
+}
+
 /* Section Styles */
 section {
   padding: 50px 20px;

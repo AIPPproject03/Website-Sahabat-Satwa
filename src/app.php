@@ -40,7 +40,10 @@ $total_animals = $conn->query("SELECT COUNT(*) AS total FROM animal")->fetch_ass
         <div class="hero-content">
             <h1>Selamat Datang di Sahabat Satwa</h1>
             <p>Platform pengelolaan data hewan, pemilik, dokter hewan, dan klinik yang mudah dan efisien.</p>
-            <a href="pages/login.php" class="btn btn-primary">Login Sekarang</a>
+            <div class="hero-buttons">
+                <a href="pages/login.php" class="btn btn-primary">Login Sekarang</a>
+                <a href="pages/register.php" class="btn btn-secondary">Daftar Sekarang</a>
+            </div>
         </div>
     </header>
 
