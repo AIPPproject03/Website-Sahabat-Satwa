@@ -23,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['username'] = $username;
             $_SESSION['role'] = $role;
 
+            // Simpan kredensial pengguna ke session
+            $_SESSION['db_username'] = $username;
+            $_SESSION['db_password'] = $password;
+
             // Arahkan ke dashboard berdasarkan peran
             if ($role === 'admin') {
                 header("Location: dashboard_admin.php");

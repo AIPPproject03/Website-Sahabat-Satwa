@@ -3,6 +3,9 @@ include '../../connection/conn.php';
 
 $visit_id = $_GET['visit_id'];
 $drug_id = $_GET['drug_id'];
+$role = $_GET['role'] ?? 'admin'; // Default ke 'admin' jika parameter role tidak ada
+
+// Ambil data visit_drug berdasarkan visit_id dan drug_id
 $visit_drug = $conn->query("SELECT * FROM visit_drug WHERE visit_id = $visit_id AND drug_id = $drug_id")->fetch_assoc();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -11,16 +14,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $visit_drug_qtysupplied = $_POST['visit_drug_qtysupplied'];
 
     $sql = "UPDATE visit_drug 
-            SET visit_drug_dose = '$visit_drug_dose', visit_drug_frequency = '$visit_drug_frequency', 
+            SET visit_drug_dose = '$visit_drug_dose', 
+                visit_drug_frequency = '$visit_drug_frequency', 
                 visit_drug_qtysupplied = $visit_drug_qtysupplied 
             WHERE visit_id = $visit_id AND drug_id = $drug_id";
     if ($conn->query($sql) === TRUE) {
-        header("Location: index.php");
+        // Redirect berdasarkan role
+        if ($role === 'vet') {
+            header("Location: ../../pages/dashboard_vet.php");
+        } else {
+            header("Location: ../../models/visit_drug/index.php");
+        }
+        exit();
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
 
+// Ambil data tambahan untuk ditampilkan di form
 $visit = $conn->query("SELECT visit_date_time FROM visit WHERE visit_id = $visit_id")->fetch_assoc();
 $drug = $conn->query("SELECT drug_name FROM drug WHERE drug_id = $drug_id")->fetch_assoc();
 ?>
@@ -56,7 +67,8 @@ $drug = $conn->query("SELECT drug_name FROM drug WHERE drug_id = $drug_id")->fet
 
             <div class="actions">
                 <button type="submit" class="btn btn-add">Simpan</button>
-                <a href="index.php" class="btn btn-back">Kembali</a>
+                <!-- Tombol Kembali -->
+                <a href="<?= $role === 'vet' ? '../../pages/dashboard_vet.php' : '../../models/visit_drug/index.php' ?>" class="btn btn-back">Kembali</a>
             </div>
         </form>
     </div>

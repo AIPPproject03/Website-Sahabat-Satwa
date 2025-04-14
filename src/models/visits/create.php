@@ -1,6 +1,8 @@
 <?php
 include '../../connection/conn.php';
 
+$role = $_GET['role'] ?? 'admin'; // Default ke 'admin' jika parameter role tidak ada
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $visit_date_time = $_POST['visit_date_time'];
     $visit_notes = $_POST['visit_notes'];
@@ -10,7 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sql = "INSERT INTO visit (visit_date_time, visit_notes, animal_id, vet_id) 
             VALUES ('$visit_date_time', '$visit_notes', $animal_id, $vet_id)";
     if ($conn->query($sql) === TRUE) {
-        header("Location: index.php");
+        // Redirect berdasarkan role
+        if ($role === 'vet') {
+            header("Location: ../../pages/dashboard_vet.php");
+        } else {
+            header("Location: ../../pages/dashboard_admin.php");
+        }
+        exit();
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
@@ -35,7 +43,7 @@ $vets = $conn->query("SELECT vet_id, vet_givenname, vet_familyname FROM vet");
         <h1>Tambah Kunjungan Baru</h1>
         <form method="POST">
             <label for="visit_date_time">Tanggal Kunjungan:</label>
-            <input type="date" id="visit_date_time" name="visit_date_time" required>
+            <input type="datetime-local" id="visit_date_time" name="visit_date_time" required>
 
             <label for="visit_notes">Catatan:</label>
             <textarea id="visit_notes" name="visit_notes" rows="4" required></textarea>
@@ -56,7 +64,8 @@ $vets = $conn->query("SELECT vet_id, vet_givenname, vet_familyname FROM vet");
 
             <div class="actions">
                 <button type="submit" class="btn btn-add">Simpan</button>
-                <a href="index.php" class="btn btn-back">Kembali</a>
+                <!-- Tombol Kembali -->
+                <a href="<?= $role === 'vet' ? '../../pages/dashboard_vet.php' : '../../pages/dashboard_admin.php' ?>" class="btn btn-back">Kembali</a>
             </div>
         </form>
     </div>

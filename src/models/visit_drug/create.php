@@ -1,6 +1,8 @@
 <?php
 include '../../connection/conn.php';
 
+$role = $_GET['role'] ?? 'admin'; // Default ke 'admin' jika parameter role tidak ada
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $visit_id = $_POST['visit_id'];
     $drug_id = $_POST['drug_id'];
@@ -11,7 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sql = "INSERT INTO visit_drug (visit_id, drug_id, visit_drug_dose, visit_drug_frequency, visit_drug_qtysupplied) 
             VALUES ($visit_id, $drug_id, '$visit_drug_dose', '$visit_drug_frequency', $visit_drug_qtysupplied)";
     if ($conn->query($sql) === TRUE) {
-        header("Location: index.php");
+        // Redirect berdasarkan role
+        if ($role === 'vet') {
+            header("Location: ../../pages/dashboard_vet.php");
+        } else {
+            header("Location: ../../models/visit_drug/index.php");
+        }
+        exit();
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
@@ -60,7 +68,8 @@ $drugs = $conn->query("SELECT drug_id, drug_name FROM drug");
 
             <div class="actions">
                 <button type="submit" class="btn btn-add">Simpan</button>
-                <a href="index.php" class="btn btn-back">Kembali</a>
+                <!-- Tombol Kembali -->
+                <a href="<?= $role === 'vet' ? '../../pages/dashboard_vet.php' : '../../models/visit_drug/index.php' ?>" class="btn btn-back">Kembali</a>
             </div>
         </form>
     </div>

@@ -25,7 +25,7 @@ $visits_result = $conn->query($visits_sql);
 // Query untuk mengambil data obat kunjungan
 $visit_drug_sql = "SELECT 
                         visit_drug.visit_id, 
-                        visit_drug.drug_id, -- Tambahkan drug_id di sini
+                        visit_drug.drug_id, 
                         drug.drug_name, 
                         visit_drug.visit_drug_dose, 
                         visit_drug.visit_drug_frequency, 
@@ -60,7 +60,8 @@ $visit_drug_result = $conn->query($visit_drug_sql);
     <section id="visits" class="dashboard-section">
         <div class="container">
             <h1>Data Kunjungan</h1>
-            <a href="../models/visits/create.php" class="btn btn-add">Tambah Kunjungan</a>
+            <!-- Tambahkan parameter role=vet ke tautan -->
+            <a href="../models/visits/create.php?role=vet" class="btn btn-add">Tambah Kunjungan</a>
             <?php if ($visits_result->num_rows > 0): ?>
                 <table>
                     <thead>
@@ -80,7 +81,8 @@ $visit_drug_result = $conn->query($visit_drug_sql);
                                 <td><?= htmlspecialchars($row['animal_name']) ?></td>
                                 <td><?= htmlspecialchars($row['owner_givenname'] . ' ' . $row['owner_familyname']) ?></td>
                                 <td>
-                                    <a href="../models/visits/update.php?id=<?= $row['visit_id'] ?>" class="btn btn-edit">✏️ Edit</a>
+                                    <!-- Tambahkan parameter role=vet ke tautan -->
+                                    <a href="../models/visits/update.php?id=<?= $row['visit_id'] ?>&role=vet" class="btn btn-edit">✏️ Edit</a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -95,7 +97,8 @@ $visit_drug_result = $conn->query($visit_drug_sql);
     <section id="visit-drugs" class="dashboard-section">
         <div class="container">
             <h1>Data Obat Kunjungan</h1>
-            <a href="../models/visit_drug/create.php" class="btn btn-add">Tambah Obat Kunjungan</a>
+            <!-- Tambahkan parameter role=vet ke tautan -->
+            <a href="../models/visit_drug/create.php?role=vet" class="btn btn-add">Tambah Obat Kunjungan</a>
             <?php if ($visit_drug_result->num_rows > 0): ?>
                 <table>
                     <thead>
@@ -117,7 +120,8 @@ $visit_drug_result = $conn->query($visit_drug_sql);
                                 <td><?= htmlspecialchars($row['visit_drug_frequency']) ?></td>
                                 <td><?= htmlspecialchars($row['visit_drug_qtysupplied']) ?></td>
                                 <td>
-                                    <a href="../models/visit_drug/update.php?visit_id=<?= $row['visit_id'] ?>&drug_id=<?= $row['drug_id'] ?>" class="btn btn-edit">✏️ Edit</a>
+                                    <!-- Tambahkan parameter role=vet ke tautan -->
+                                    <a href="../models/visit_drug/update.php?visit_id=<?= $row['visit_id'] ?>&drug_id=<?= $row['drug_id'] ?>&role=vet" class="btn btn-edit">✏️ Edit</a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>

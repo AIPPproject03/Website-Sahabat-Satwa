@@ -138,6 +138,26 @@ form select:focus {
   outline: none;
 }
 
+/* Styling untuk textarea */
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  resize: vertical; /* Hanya izinkan resize secara vertikal */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+textarea:focus {
+  border-color: #4caf50; /* Warna hijau saat fokus */
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Efek glow hijau */
+  outline: none;
+}
+
 /* Navigation Styles */
 ul {
   list-style: none;

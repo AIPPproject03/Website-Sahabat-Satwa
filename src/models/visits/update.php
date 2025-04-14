@@ -2,20 +2,27 @@
 include '../../connection/conn.php';
 
 $id = $_GET['id'];
+$role = $_GET['role'] ?? 'admin'; // Default ke 'admin' jika parameter role tidak ada
+
 $visit = $conn->query("SELECT * FROM visit WHERE visit_id = $id")->fetch_assoc();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $visit_date_time = $_POST['visit_date_time'];
     $visit_notes = $_POST['visit_notes'];
     $animal_id = $_POST['animal_id'];
     $vet_id = $_POST['vet_id'];
 
     $sql = "UPDATE visit 
-            SET visit_date_time = '$visit_date_time', visit_notes = '$visit_notes', 
+            SET visit_notes = '$visit_notes', 
                 animal_id = $animal_id, vet_id = $vet_id 
             WHERE visit_id = $id";
     if ($conn->query($sql) === TRUE) {
-        header("Location: index.php");
+        // Redirect berdasarkan role
+        if ($role === 'vet') {
+            header("Location: ../../pages/dashboard_vet.php");
+        } else {
+            header("Location: ../../models/visits/index.php");
+        }
+        exit();
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
@@ -40,7 +47,8 @@ $vets = $conn->query("SELECT vet_id, vet_givenname, vet_familyname FROM vet");
         <h1>Edit Kunjungan</h1>
         <form method="POST">
             <label for="visit_date_time">Tanggal Kunjungan:</label>
-            <input type="date" id="visit_date_time" name="visit_date_time" value="<?= $visit['visit_date_time'] ?>" required>
+            <!-- Tampilkan tanggal kunjungan sebagai teks yang tidak dapat diedit -->
+            <input type="text" id="visit_date_time" value="<?= $visit['visit_date_time'] ?>" disabled>
 
             <label for="visit_notes">Catatan:</label>
             <textarea id="visit_notes" name="visit_notes" rows="4" required><?= $visit['visit_notes'] ?></textarea>
@@ -65,7 +73,8 @@ $vets = $conn->query("SELECT vet_id, vet_givenname, vet_familyname FROM vet");
 
             <div class="actions">
                 <button type="submit" class="btn btn-add">Simpan</button>
-                <a href="index.php" class="btn btn-back">Kembali</a>
+                <!-- Tombol Kembali -->
+                <a href="<?= $role === 'vet' ? '../../pages/dashboard_vet.php' : '../../models/visits/index.php' ?>" class="btn btn-back">Kembali</a>
             </div>
         </form>
     </div>
