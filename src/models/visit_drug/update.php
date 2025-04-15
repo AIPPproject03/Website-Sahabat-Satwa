@@ -4,17 +4,34 @@ include '../../connection/conn.php';
 $visit_id = $_GET['visit_id'];
 $drug_id = $_GET['drug_id'];
 $role = $_GET['role'] ?? 'admin'; // Default ke 'admin' jika parameter role tidak ada
+$vet_id = $_SESSION['vet_id'] ?? null;
 
-// Ambil data visit_drug berdasarkan visit_id dan drug_id
+// Ambil data visit_drug yang akan diupdate
 $visit_drug = $conn->query("SELECT * FROM visit_drug WHERE visit_id = $visit_id AND drug_id = $drug_id")->fetch_assoc();
 
+// Ambil data kunjungan berdasarkan role
+if ($role === 'vet') {
+    // Vet hanya dapat memilih kunjungan yang mereka layani
+    $visits = $conn->query("SELECT visit_id FROM visit WHERE vet_id = $vet_id ORDER BY visit_id ASC");
+} else {
+    // Admin dapat memilih semua kunjungan
+    $visits = $conn->query("SELECT visit_id FROM visit ORDER BY visit_id ASC");
+}
+
+// Ambil data obat
+$drugs = $conn->query("SELECT drug_id, drug_name FROM drug");
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $visit_id = $_POST['visit_id'];
+    $drug_id = $_POST['drug_id'];
     $visit_drug_dose = $_POST['visit_drug_dose'];
     $visit_drug_frequency = $_POST['visit_drug_frequency'];
     $visit_drug_qtysupplied = $_POST['visit_drug_qtysupplied'];
 
     $sql = "UPDATE visit_drug 
-            SET visit_drug_dose = '$visit_drug_dose', 
+            SET visit_id = $visit_id, 
+                drug_id = $drug_id, 
+                visit_drug_dose = '$visit_drug_dose', 
                 visit_drug_frequency = '$visit_drug_frequency', 
                 visit_drug_qtysupplied = $visit_drug_qtysupplied 
             WHERE visit_id = $visit_id AND drug_id = $drug_id";
@@ -30,10 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
-
-// Ambil data tambahan untuk ditampilkan di form
-$visit = $conn->query("SELECT visit_date_time FROM visit WHERE visit_id = $visit_id")->fetch_assoc();
-$drug = $conn->query("SELECT drug_name FROM drug WHERE drug_id = $drug_id")->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -50,11 +63,23 @@ $drug = $conn->query("SELECT drug_name FROM drug WHERE drug_id = $drug_id")->fet
     <div class="container">
         <h1>Edit Obat Kunjungan</h1>
         <form method="POST">
-            <label>Tanggal Kunjungan:</label>
-            <input type="text" value="<?= $visit['visit_date_time'] ?>" disabled>
+            <label for="visit_id">ID Kunjungan:</label>
+            <select id="visit_id" name="visit_id" required>
+                <?php while ($visit = $visits->fetch_assoc()): ?>
+                    <option value="<?= $visit['visit_id'] ?>" <?= $visit['visit_id'] == $visit_drug['visit_id'] ? 'selected' : '' ?>>
+                        <?= $visit['visit_id'] ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
 
-            <label>Nama Obat:</label>
-            <input type="text" value="<?= $drug['drug_name'] ?>" disabled>
+            <label for="drug_id">Nama Obat:</label>
+            <select id="drug_id" name="drug_id" required>
+                <?php while ($drug = $drugs->fetch_assoc()): ?>
+                    <option value="<?= $drug['drug_id'] ?>" <?= $drug['drug_id'] == $visit_drug['drug_id'] ? 'selected' : '' ?>>
+                        <?= $drug['drug_name'] ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
 
             <label for="visit_drug_dose">Dosis:</label>
             <input type="text" id="visit_drug_dose" name="visit_drug_dose" value="<?= $visit_drug['visit_drug_dose'] ?>" required>
@@ -67,7 +92,6 @@ $drug = $conn->query("SELECT drug_name FROM drug WHERE drug_id = $drug_id")->fet
 
             <div class="actions">
                 <button type="submit" class="btn btn-add">Simpan</button>
-                <!-- Tombol Kembali -->
                 <a href="<?= $role === 'vet' ? '../../pages/dashboard_vet.php' : '../../models/visit_drug/index.php' ?>" class="btn btn-back">Kembali</a>
             </div>
         </form>

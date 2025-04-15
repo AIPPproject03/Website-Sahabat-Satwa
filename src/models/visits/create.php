@@ -8,9 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $visit_notes = $_POST['visit_notes'];
     $animal_id = $_POST['animal_id'];
     $vet_id = $_POST['vet_id'];
+    $from_visit_id = $_POST['from_visit_id'] ?? 'NULL'; // Jika tidak ada kunjungan sebelumnya, set NULL
 
-    $sql = "INSERT INTO visit (visit_date_time, visit_notes, animal_id, vet_id) 
-            VALUES ('$visit_date_time', '$visit_notes', $animal_id, $vet_id)";
+    $sql = "INSERT INTO visit (visit_date_time, visit_notes, animal_id, vet_id, from_visit_id) 
+            VALUES ('$visit_date_time', '$visit_notes', $animal_id, $vet_id, $from_visit_id)";
     if ($conn->query($sql) === TRUE) {
         // Redirect berdasarkan role
         if ($role === 'vet') {
@@ -24,8 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
+// Ambil data hewan
 $animals = $conn->query("SELECT animal_id, animal_name FROM animal");
+
+// Ambil data dokter
 $vets = $conn->query("SELECT vet_id, vet_givenname, vet_familyname FROM vet");
+
+// Ambil data kunjungan sebelumnya
+$previous_visits = $conn->query("SELECT visit_id, visit_date_time FROM visit ORDER BY visit_id ASC");
 ?>
 
 <!DOCTYPE html>
@@ -62,9 +69,16 @@ $vets = $conn->query("SELECT vet_id, vet_givenname, vet_familyname FROM vet");
                 <?php endwhile; ?>
             </select>
 
+            <label for="from_visit_id">Kunjungan Sebelumnya (Opsional):</label>
+            <select id="from_visit_id" name="from_visit_id">
+                <option value="">Tidak Ada</option>
+                <?php while ($visit = $previous_visits->fetch_assoc()): ?>
+                    <option value="<?= $visit['visit_id'] ?>">ID <?= $visit['visit_id'] ?> - <?= $visit['visit_date_time'] ?></option>
+                <?php endwhile; ?>
+            </select>
+
             <div class="actions">
                 <button type="submit" class="btn btn-add">Simpan</button>
-                <!-- Tombol Kembali -->
                 <a href="<?= $role === 'vet' ? '../../pages/dashboard_vet.php' : '../../pages/dashboard_admin.php' ?>" class="btn btn-back">Kembali</a>
             </div>
         </form>

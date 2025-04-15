@@ -10,10 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $visit_notes = $_POST['visit_notes'];
     $animal_id = $_POST['animal_id'];
     $vet_id = $_POST['vet_id'];
+    $from_visit_id = $_POST['from_visit_id'] ?? 'NULL'; // Jika tidak ada kunjungan sebelumnya, set NULL
 
     $sql = "UPDATE visit 
             SET visit_notes = '$visit_notes', 
-                animal_id = $animal_id, vet_id = $vet_id 
+                animal_id = $animal_id, 
+                vet_id = $vet_id, 
+                from_visit_id = $from_visit_id 
             WHERE visit_id = $id";
     if ($conn->query($sql) === TRUE) {
         // Redirect berdasarkan role
@@ -28,8 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
+// Ambil data hewan
 $animals = $conn->query("SELECT animal_id, animal_name FROM animal");
+
+// Ambil data dokter
 $vets = $conn->query("SELECT vet_id, vet_givenname, vet_familyname FROM vet");
+
+// Ambil data kunjungan sebelumnya
+$previous_visits = $conn->query("SELECT visit_id, visit_date_time FROM visit WHERE visit_id != $id ORDER BY visit_id ASC");
 ?>
 
 <!DOCTYPE html>
@@ -67,6 +76,16 @@ $vets = $conn->query("SELECT vet_id, vet_givenname, vet_familyname FROM vet");
                 <?php while ($vet = $vets->fetch_assoc()): ?>
                     <option value="<?= $vet['vet_id'] ?>" <?= $vet['vet_id'] == $visit['vet_id'] ? 'selected' : '' ?>>
                         <?= $vet['vet_givenname'] . ' ' . $vet['vet_familyname'] ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+
+            <label for="from_visit_id">Kunjungan Sebelumnya (Opsional):</label>
+            <select id="from_visit_id" name="from_visit_id">
+                <option value="">Tidak Ada</option>
+                <?php while ($prev_visit = $previous_visits->fetch_assoc()): ?>
+                    <option value="<?= $prev_visit['visit_id'] ?>" <?= $prev_visit['visit_id'] == $visit['from_visit_id'] ? 'selected' : '' ?>>
+                        ID <?= $prev_visit['visit_id'] ?> - <?= $prev_visit['visit_date_time'] ?>
                     </option>
                 <?php endwhile; ?>
             </select>

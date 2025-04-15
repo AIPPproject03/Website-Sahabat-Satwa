@@ -45,6 +45,7 @@ $result = $conn->query($sql);
             <table>
                 <thead>
                     <tr>
+                        <th>ID Kunjungan</th>
                         <th>Tanggal Kunjungan</th>
                         <th>Catatan</th>
                         <th>Nama Hewan</th>
@@ -55,6 +56,7 @@ $result = $conn->query($sql);
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr>
+                            <td><?= htmlspecialchars($row['visit_id']) ?></td>
                             <td><?= htmlspecialchars($row['visit_date_time']) ?></td>
                             <td><?= htmlspecialchars($row['visit_notes']) ?></td>
                             <td><?= htmlspecialchars($row['animal_name']) ?></td>
