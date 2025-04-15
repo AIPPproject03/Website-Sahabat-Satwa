@@ -27,13 +27,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['db_username'] = $username;
             $_SESSION['db_password'] = $password;
 
-            // Arahkan ke dashboard berdasarkan peran
+            // Periksa role pengguna
             if ($role === 'admin') {
+                // Admin langsung diarahkan ke dashboard admin
                 header("Location: dashboard_admin.php");
-            } elseif ($role === 'vet') {
-                header("Location: dashboard_vet.php");
             } elseif ($role === 'owner') {
-                header("Location: dashboard_owner.php");
+                // Cek username di tabel owners
+                $owner_sql = "SELECT owner_id FROM owners WHERE owner_username = '$username'";
+                $owner_result = $conn->query($owner_sql);
+
+                if ($owner_result && $owner_row = $owner_result->fetch_assoc()) {
+                    $_SESSION['owner_id'] = $owner_row['owner_id']; // Simpan owner_id ke session
+                    header("Location: dashboard_owner.php");
+                } else {
+                    $error_message = "Username tidak ditemukan di tabel owners.";
+                }
+            } elseif ($role === 'vet') {
+                // Cek username di tabel vet
+                $vet_sql = "SELECT vet_id FROM vet WHERE vet_username = '$username'";
+                $vet_result = $conn->query($vet_sql);
+
+                if ($vet_result && $vet_row = $vet_result->fetch_assoc()) {
+                    $_SESSION['vet_id'] = $vet_row['vet_id']; // Simpan vet_id ke session
+                    header("Location: dashboard_vet.php");
+                } else {
+                    $error_message = "Username tidak ditemukan di tabel vet.";
+                }
             } else {
                 $error_message = "Peran tidak dikenali.";
             }
@@ -44,6 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } catch (Exception $e) {
         // Tangani kesalahan login
         $error_message = "Username atau password salah.";
+        // Pesan Error Sebenarnya
+        $error_message = "Terjadi kesalahan: " . $e->getMessage();
     }
 }
 ?>

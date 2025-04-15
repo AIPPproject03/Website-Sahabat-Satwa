@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 14 Apr 2025 pada 17.44
+-- Waktu pembuatan: 15 Apr 2025 pada 11.35
 -- Versi server: 10.4.28-MariaDB
 -- Versi PHP: 8.2.4
 
@@ -168,7 +168,14 @@ INSERT INTO `audit_log` (`log_id`, `user`, `action`, `timestamp`) VALUES
 (42, 'ria@localhost', 'Updated visit: 11', '2025-04-14 22:33:38'),
 (43, 'ria@localhost', 'Inserted new visit: 12', '2025-04-14 22:39:25'),
 (44, 'superadmin@localhost', 'Deleted visit: 12', '2025-04-14 22:40:24'),
-(45, 'abil@localhost', 'Updated visit: 1', '2025-04-14 22:42:21');
+(45, 'abil@localhost', 'Updated visit: 1', '2025-04-14 22:42:21'),
+(46, 'ria@localhost', 'Updated visit: 1', '2025-04-15 14:52:57'),
+(47, 'ria@localhost', 'Updated visit: 1', '2025-04-15 14:53:37'),
+(48, 'root@localhost', 'Inserted new owner: 9', '2025-04-15 15:00:24'),
+(49, 'root@localhost', 'Inserted new owner: 10', '2025-04-15 15:57:13'),
+(50, 'root@localhost', 'Deleted owner: 10', '2025-04-15 15:57:42'),
+(51, 'root@localhost', 'Deleted owner: 9', '2025-04-15 15:57:44'),
+(52, 'root@localhost', 'Updated owner: 2', '2025-04-15 16:35:26');
 
 -- --------------------------------------------------------
 
@@ -287,21 +294,22 @@ CREATE TABLE `owners` (
   `owner_familyname` varchar(30) DEFAULT NULL,
   `owner_address` varchar(100) NOT NULL,
   `owner_phone` varchar(14) DEFAULT NULL,
-  `owner_password` varbinary(255) NOT NULL
+  `owner_password` varbinary(255) NOT NULL,
+  `owner_username` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data untuk tabel `owners`
 --
 
-INSERT INTO `owners` (`owner_id`, `owner_givenname`, `owner_familyname`, `owner_address`, `owner_phone`, `owner_password`) VALUES
-(1, 'Budi', 'Santoso', 'Jl. Hiu No. 18', '081234567890', ''),
-(2, 'Ani', 'Rahayu', 'Jl. Rajawali No. 23', '081234567891', 0xa63e6b6ef938a640e1f26a6a7a33cfb0),
-(3, 'Cindy', 'Wijaya', 'Jl. Samudera No. 03', '081234567892', ''),
-(4, 'Dodi', 'Saputra', 'Jl. RTA No. 08', '081234567893', ''),
-(5, 'Eva', 'Sari', 'Jl. Borneo No. 19', '081234567894', ''),
-(6, 'Fandi', 'Wijaya', 'Jl. Kamboja No. 25', '081234567895', ''),
-(8, 'Irwin', 'Putra', 'BTN Kumai Damai', '082254892043', '');
+INSERT INTO `owners` (`owner_id`, `owner_givenname`, `owner_familyname`, `owner_address`, `owner_phone`, `owner_password`, `owner_username`) VALUES
+(1, 'Budi', 'Santoso', 'Jl. Hiu No. 18', '081234567890', '', ''),
+(2, 'Ani', 'Rahayu', 'Jl. Rajawali No. 23', '081234567891', '', ''),
+(3, 'Cindy', 'Wijaya', 'Jl. Samudera No. 03', '081234567892', '', ''),
+(4, 'Dodi', 'Saputra', 'Jl. RTA No. 08', '081234567893', '', ''),
+(5, 'Eva', 'Sari', 'Jl. Borneo No. 19', '081234567894', '', ''),
+(6, 'Fandi', 'Wijaya', 'Jl. Kamboja No. 25', '081234567895', '', ''),
+(8, 'Irwin', 'Putra', 'BTN Kumai Damai', '082254892043', '', '');
 
 --
 -- Trigger `owners`
@@ -431,20 +439,22 @@ CREATE TABLE `vet` (
   `vet_phone` varchar(14) NOT NULL,
   `vet_employed` date NOT NULL,
   `spec_id` int(11) DEFAULT NULL,
-  `clinic_id` int(11) NOT NULL
+  `clinic_id` int(11) NOT NULL,
+  `vet_username` varchar(50) NOT NULL,
+  `vet_password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data untuk tabel `vet`
 --
 
-INSERT INTO `vet` (`vet_id`, `vet_title`, `vet_givenname`, `vet_familyname`, `vet_phone`, `vet_employed`, `spec_id`, `clinic_id`) VALUES
-(1, 'Dr.', 'Ria', 'Agustin', '081234567890', '2021-01-01', 3, 1),
-(2, 'Prof', 'Irwin', 'Pangesti', '081234567891', '2021-01-02', 1, 1),
-(3, 'Dr.', 'Martha', 'Lena', '081234567892', '2021-01-03', 2, 2),
-(4, 'Prof', 'Salsabila', 'Aprilia', '081234567893', '2021-01-04', 3, 2),
-(5, 'Dr.', 'Bima', 'Saputra', '081234567894', '2021-01-05', 1, 3),
-(6, 'Dr.', 'Abil', 'Abzari', '081234567895', '2021-01-06', 1, 3);
+INSERT INTO `vet` (`vet_id`, `vet_title`, `vet_givenname`, `vet_familyname`, `vet_phone`, `vet_employed`, `spec_id`, `clinic_id`, `vet_username`, `vet_password`) VALUES
+(1, 'Dr.', 'Ria', 'Agustin', '081234567890', '2021-01-01', 3, 1, '', ''),
+(2, 'Prof', 'Irwin', 'Pangesti', '081234567891', '2021-01-02', 1, 1, '', ''),
+(3, 'Dr.', 'Martha', 'Lena', '081234567892', '2021-01-03', 2, 2, '', ''),
+(4, 'Prof', 'Salsabila', 'Aprilia', '081234567893', '2021-01-04', 3, 2, '', ''),
+(5, 'Dr.', 'Bima', 'Saputra', '081234567894', '2021-01-05', 1, 3, '', ''),
+(6, 'Dr.', 'Abil', 'Abzari', '081234567895', '2021-01-06', 1, 3, '', '');
 
 --
 -- Trigger `vet`
@@ -696,7 +706,7 @@ ALTER TABLE `animal_type`
 -- AUTO_INCREMENT untuk tabel `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT untuk tabel `clinic`
@@ -714,7 +724,7 @@ ALTER TABLE `drug`
 -- AUTO_INCREMENT untuk tabel `owners`
 --
 ALTER TABLE `owners`
-  MODIFY `owner_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `owner_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `specialisation`

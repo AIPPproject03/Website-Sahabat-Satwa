@@ -8,7 +8,10 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['role'] !== 'owner') {
 }
 include '../connection/conn.php';
 
-// Query untuk mengambil data kunjungan
+// Ambil owner_id dari session
+$owner_id = $_SESSION['owner_id'];
+
+// Query untuk mengambil data kunjungan yang hanya milik owner yang login
 $visits_sql = "SELECT 
                     visit.visit_id, 
                     visit.visit_date_time, 
@@ -19,10 +22,11 @@ $visits_sql = "SELECT
                 FROM visit
                 JOIN animal ON visit.animal_id = animal.animal_id
                 JOIN vet ON visit.vet_id = vet.vet_id
+                WHERE animal.owner_id = $owner_id
                 ORDER BY visit.visit_id ASC";
 $visits_result = $conn->query($visits_sql);
 
-// Query untuk mengambil data obat kunjungan
+// Query untuk mengambil data obat kunjungan yang hanya milik owner yang login
 $visit_drug_sql = "SELECT 
                         visit_drug.visit_id, 
                         drug.drug_name, 
@@ -31,6 +35,9 @@ $visit_drug_sql = "SELECT
                         visit_drug.visit_drug_qtysupplied 
                     FROM visit_drug
                     JOIN drug ON visit_drug.drug_id = drug.drug_id
+                    JOIN visit ON visit_drug.visit_id = visit.visit_id
+                    JOIN animal ON visit.animal_id = animal.animal_id
+                    WHERE animal.owner_id = $owner_id
                     ORDER BY visit_drug.visit_id ASC";
 $visit_drug_result = $conn->query($visit_drug_sql);
 ?>

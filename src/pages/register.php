@@ -11,6 +11,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $owner_phone = $_POST['owner_phone'];
 
     try {
+        // Validasi apakah username sudah digunakan
+        $check_username_sql = "SELECT COUNT(*) AS count FROM owners WHERE owner_username = '$username'";
+        $result = $conn->query($check_username_sql);
+        $row = $result->fetch_assoc();
+        if ($row['count'] > 0) {
+            throw new Exception("Username sudah digunakan. Silakan pilih username lain.");
+        }
+
+        // Hash password untuk keamanan
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+        // Tambahkan data owner ke tabel owners
+        $insert_owner_sql = "INSERT INTO owners (owner_givenname, owner_familyname, owner_address, owner_phone, owner_username, owner_password) 
+                             VALUES ('$owner_givenname', '$owner_familyname', '$owner_address', '$owner_phone', '$username', '$hashed_password')";
+        $conn->query($insert_owner_sql);
+
         // Buat user baru di database
         $create_user_sql = "CREATE USER '$username'@'localhost' IDENTIFIED BY '$password'";
         $conn->query($create_user_sql);
@@ -22,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             GRANT SELECT ON sahabatsatwa.animal TO '$username'@'localhost';
             GRANT SELECT ON sahabatsatwa.vet TO '$username'@'localhost';
             GRANT SELECT ON sahabatsatwa.drug TO '$username'@'localhost';
+            GRANT SELECT ON sahabatsatwa.owners TO '$username'@'localhost';
         ";
         $conn->multi_query($grant_permissions_sql);
         while ($conn->next_result()) {;
@@ -34,11 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Set default role ke owner
         $set_default_role_sql = "SET DEFAULT ROLE owner FOR '$username'@'localhost'";
         $conn->query($set_default_role_sql);
-
-        // Tambahkan data owner ke tabel owners
-        $insert_owner_sql = "INSERT INTO owners (owner_givenname, owner_familyname, owner_address, owner_phone) 
-                             VALUES ('$owner_givenname', '$owner_familyname', '$owner_address', '$owner_phone')";
-        $conn->query($insert_owner_sql);
 
         // Redirect ke halaman login setelah berhasil mendaftar
         header("Location: login.php");
