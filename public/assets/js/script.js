@@ -1,20 +1,5 @@
 // Menampilkan animasi loading saat tombol ditekan
 document.addEventListener("DOMContentLoaded", function () {
-  const buttons = document.querySelectorAll("button, .btn");
-  const loading = document.createElement("div");
-  loading.className = "loading";
-  loading.innerText = "Loading...";
-  document.body.appendChild(loading);
-
-  buttons.forEach((button) => {
-    button.addEventListener("click", function () {
-      loading.style.display = "block";
-      setTimeout(() => {
-        loading.style.display = "none";
-      }, 1000); // Simulasi waktu loading 1 detik
-    });
-  });
-
   // Menampilkan pop-up info saat mouse hover
   const menuItems = document.querySelectorAll(".menu-item");
 
@@ -60,56 +45,63 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Buat elemen loading
-  const loading = document.createElement("div");
-  loading.className = "loading";
-  loading.innerHTML = `
-    <div class="loading-text">
-      <span>L</span>
-      <span>o</span>
-      <span>a</span>
-      <span>d</span>
-      <span>i</span>
-      <span>n</span>
-      <span>g</span>
-    </div>
-    <div class="loading-dots">
-      🐾 🐶 🐱
-    </div>
-  `;
-  document.body.appendChild(loading);
+  // Periksa apakah halaman saat ini adalah dashboard_admin.php
+  const currentPath = window.location.pathname;
+  const isDashboardAdmin = currentPath.includes("dashboard_admin.php");
 
-  // Tambahkan event listener untuk semua tautan
-  const links = document.querySelectorAll("a");
-  links.forEach((link) => {
-    link.addEventListener("click", function (e) {
-      // Cegah navigasi langsung
-      e.preventDefault();
+  // Jika bukan halaman dashboard admin, baru terapkan animasi loading
+  if (!isDashboardAdmin) {
+    // Buat elemen loading
+    const loading = document.createElement("div");
+    loading.className = "loading";
+    loading.innerHTML = `
+      <div class="loading-text">
+        <span>L</span>
+        <span>o</span>
+        <span>a</span>
+        <span>d</span>
+        <span>i</span>
+        <span>n</span>
+        <span>g</span>
+      </div>
+      <div class="loading-dots">
+        🐾 🐶 🐱
+      </div>
+    `;
+    document.body.appendChild(loading);
 
-      // Tampilkan animasi loading
-      loading.style.display = "flex";
+    // Tambahkan event listener untuk semua tautan
+    const links = document.querySelectorAll("a:not([href*='dashboard_admin'])");
+    links.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        // Cegah navigasi langsung
+        e.preventDefault();
 
-      setTimeout(() => {
-        window.location.href = link.href;
-      }, 500);
+        // Tampilkan animasi loading
+        loading.style.display = "flex";
+
+        setTimeout(() => {
+          window.location.href = link.href;
+        }, 500);
+      });
     });
-  });
 
-  // Tambahkan event listener untuk tombol dengan kelas tertentu
-  const buttons = document.querySelectorAll(
-    "a.btn-edit, a.btn-delete, a.btn-add"
-  );
-  buttons.forEach((button) => {
-    button.addEventListener("click", function (e) {
-      e.preventDefault(); // Mencegah navigasi langsung
-      loading.style.display = "flex";
+    // Tambahkan event listener untuk tombol dengan kelas tertentu
+    const buttons = document.querySelectorAll(
+      "a.btn-edit, a.btn-delete, a.btn-add"
+    );
+    buttons.forEach((button) => {
+      button.addEventListener("click", function (e) {
+        e.preventDefault(); // Mencegah navigasi langsung
+        loading.style.display = "flex";
 
-      // Simulasi waktu loading sebelum navigasi
-      setTimeout(() => {
-        window.location.href = button.href; // Navigasi ke tautan
-      }, 2000); // 2 detik loading
+        // Simulasi waktu loading sebelum navigasi
+        setTimeout(() => {
+          window.location.href = button.href; // Navigasi ke tautan
+        }, 2000); // 2 detik loading
+      });
     });
-  });
+  }
 });
 
 // Animasi hover pada tabel
