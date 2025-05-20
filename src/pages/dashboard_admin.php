@@ -116,8 +116,38 @@ include '../connection/conn.php';
                         </div>
                     </a>
                 </div>
-            </div>
-        </div>
+                <div class="menu-item">
+                    <a href="../models/cashier/index.php">
+                        Cashier
+                        <div class="popup-info">
+                            Tabel ini berisi data kasir, termasuk nama, username, klinik tempat bekerja, dan status aktif.
+                        </div>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="../models/inventory/index.php">
+                        Inventory
+                        <div class="popup-info">
+                            Tabel ini berisi data inventaris obat di klinik, termasuk jumlah, tanggal restock, dan tanggal kadaluarsa.
+                        </div>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="../models/payment/index.php">
+                        Payment
+                        <div class="popup-info">
+                            Tabel ini berisi data pembayaran yang dilakukan oleh pemilik hewan untuk kunjungan ke klinik.
+                        </div>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="../models/receipt/index.php">
+                        Receipt
+                        <div class="popup-info">
+                            Tabel ini berisi data struk pembayaran yang diterima oleh pemilik hewan setelah melakukan pembayaran.
+                        </div>
+                    </a>
+                </div>
     </section>
 
 </body>

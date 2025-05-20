@@ -1,4 +1,5 @@
 <?php
+// filepath: d:\AIPPROJECT03\TUGAS WEB\Website Sahabat Satwa\src\models\visits\update.php
 include '../../connection/conn.php';
 
 $id = $_GET['id'];
@@ -11,12 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $animal_id = $_POST['animal_id'];
     $vet_id = $_POST['vet_id'];
     $from_visit_id = $_POST['from_visit_id'] ?? 'NULL'; // Jika tidak ada kunjungan sebelumnya, set NULL
+    $visit_status = $_POST['visit_status']; // Ambil status kunjungan dari form
 
     $sql = "UPDATE visit 
             SET visit_notes = '$visit_notes', 
                 animal_id = $animal_id, 
                 vet_id = $vet_id, 
-                from_visit_id = $from_visit_id 
+                from_visit_id = $from_visit_id, 
+                visit_status = '$visit_status' 
             WHERE visit_id = $id";
     if ($conn->query($sql) === TRUE) {
         // Redirect berdasarkan role
@@ -55,10 +58,6 @@ $previous_visits = $conn->query("SELECT visit_id, visit_date_time FROM visit WHE
     <div class="container">
         <h1>Edit Kunjungan</h1>
         <form method="POST">
-            <label for="visit_date_time">Tanggal Kunjungan:</label>
-            <!-- Tampilkan tanggal kunjungan sebagai teks yang tidak dapat diedit -->
-            <input type="text" id="visit_date_time" value="<?= $visit['visit_date_time'] ?>" disabled>
-
             <label for="visit_notes">Catatan:</label>
             <textarea id="visit_notes" name="visit_notes" rows="4" required><?= $visit['visit_notes'] ?></textarea>
 
@@ -90,9 +89,14 @@ $previous_visits = $conn->query("SELECT visit_id, visit_date_time FROM visit WHE
                 <?php endwhile; ?>
             </select>
 
+            <label for="visit_status">Status Kunjungan:</label>
+            <select id="visit_status" name="visit_status" required>
+                <option value="Unpaid" <?= $visit['visit_status'] === 'Unpaid' ? 'selected' : '' ?>>Unpaid</option>
+                <option value="Paid" <?= $visit['visit_status'] === 'Paid' ? 'selected' : '' ?>>Paid</option>
+            </select>
+
             <div class="actions">
                 <button type="submit" class="btn btn-add">Simpan</button>
-                <!-- Tombol Kembali -->
                 <a href="<?= $role === 'vet' ? '../../pages/dashboard_vet.php' : '../../models/visits/index.php' ?>" class="btn btn-back">Kembali</a>
             </div>
         </form>

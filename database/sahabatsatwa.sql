@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 15 Apr 2025 pada 18.15
+-- Waktu pembuatan: 20 Bulan Mei 2025 pada 08.49
 -- Versi server: 10.4.28-MariaDB
 -- Versi PHP: 8.2.4
 
@@ -20,6 +20,107 @@ SET time_zone = "+00:00";
 --
 -- Database: `sahabatsatwa`
 --
+
+DELIMITER $$
+--
+-- Prosedur
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `check_inventory` (`p_clinic_id` INT)   BEGIN
+    SELECT
+        d.drug_name,
+        i.quantity,
+        i.expiration_date,
+        CASE
+            WHEN i.quantity <= 10 AND i.expiration_date <= CURDATE() THEN 'LOW STOCK & EXPIRED'
+            WHEN i.quantity <= 10 THEN 'LOW STOCK'
+            WHEN i.expiration_date <= CURDATE() THEN 'EXPIRED'
+            WHEN i.expiration_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) THEN 'NEAR EXPIRY'
+            ELSE 'OK'
+        END AS status
+    FROM inventory i
+    JOIN drug d ON i.drug_id = d.drug_id
+    WHERE i.clinic_id = p_clinic_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `process_payment` (IN `v_visit_id` INT, IN `v_cashier_id` INT, IN `v_payment_amount` INT, IN `v_payment_method` ENUM('Cash','Credit Card','Debit Card','Transfer'))   BEGIN
+    DECLARE v_total_amount INT;
+
+    -- Cek apakah visit_id ada di tabel visit
+    IF NOT EXISTS (SELECT 1 FROM visit WHERE visit_id = v_visit_id) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Visit ID tidak ditemukan dalam tabel visit.';
+    END IF;
+
+    -- Hitung total biaya dari obat yang diberikan untuk visit ini
+    SELECT SUM(d.price * vd.visit_drug_qtysupplied)
+    INTO v_total_amount
+    FROM visit_drug vd
+    JOIN drug d ON vd.drug_id = d.drug_id
+    WHERE vd.visit_id = v_visit_id;
+
+    -- Jika tidak ada obat yang diberikan (NULL), anggap total biaya = 0
+    IF v_total_amount IS NULL THEN
+        SET v_total_amount = 0;
+    END IF;
+
+    -- Masukkan data ke tabel payment
+    INSERT INTO payment (
+        visit_id,
+        cashier_id,
+        payment_date,
+        payment_amount,
+        payment_method,
+        payment_status
+    ) VALUES (
+        v_visit_id,
+        v_cashier_id,
+        NOW(),
+        v_payment_amount,
+        v_payment_method,
+        'Paid'
+    );
+
+    -- Masukkan data ke tabel receipt
+    INSERT INTO receipt (
+        payment_id,
+        receipt_number,
+        issue_date,
+        total_amount
+    ) VALUES (
+        LAST_INSERT_ID(),
+        CONCAT('R-', DATE_FORMAT(NOW(), '%Y%m%d'), '-', LAST_INSERT_ID()),
+        NOW(),
+        v_total_amount
+    );
+END$$
+
+--
+-- Fungsi
+--
+CREATE DEFINER=`root`@`localhost` FUNCTION `calculate_total_payment` (`p_visit_id` INT) RETURNS DECIMAL(10,2) DETERMINISTIC BEGIN
+    DECLARE total_obat DECIMAL(10,2);
+    DECLARE total DECIMAL(10,2);
+    DECLARE biaya_konsultasi DECIMAL(10,2) DEFAULT 150000;
+
+    -- Hitung total biaya obat
+    SELECT SUM(d.price * vd.visit_drug_qtysupplied)
+    INTO total_obat
+    FROM visit_drug vd
+    JOIN drug d ON vd.drug_id = d.drug_id
+    WHERE vd.visit_id = p_visit_id AND d.price IS NOT NULL;
+
+    -- Jika harga obat tidak ada, kembalikan NULL atau nilai default
+    IF total_obat IS NULL THEN
+        RETURN 0;  -- Atau nilai lain yang sesuai jika harga obat tidak ditemukan
+    END IF;
+
+    -- Tambahkan biaya konsultasi
+    SET total = total_obat + biaya_konsultasi;
+
+    RETURN total;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -184,7 +285,76 @@ INSERT INTO `audit_log` (`log_id`, `user`, `action`, `timestamp`) VALUES
 (111, 'root@localhost', 'Inserted new owner: 19', '2025-04-15 22:57:08'),
 (112, 'root@localhost', 'Deleted owner: 19', '2025-04-15 23:00:20'),
 (113, 'ria@localhost', 'Updated visit: 16', '2025-04-15 23:08:48'),
-(114, 'martha@localhost', 'Inserted new visit drug: 19 - 14', '2025-04-15 23:14:17');
+(114, 'martha@localhost', 'Inserted new visit drug: 19 - 14', '2025-04-15 23:14:17'),
+(115, 'root@localhost', 'Inserted new owner: 20', '2025-04-16 15:15:59'),
+(116, 'root@localhost', 'Updated drug: 1', '2025-04-22 21:27:15'),
+(117, 'root@localhost', 'Updated drug: 2', '2025-04-22 21:27:29'),
+(118, 'root@localhost', 'Updated drug: 3', '2025-04-22 21:27:39'),
+(119, 'root@localhost', 'Updated drug: 4', '2025-04-22 21:27:48'),
+(120, 'root@localhost', 'Updated drug: 5', '2025-04-22 21:27:57'),
+(121, 'root@localhost', 'Updated drug: 6', '2025-04-22 21:28:07'),
+(122, 'root@localhost', 'Updated drug: 7', '2025-04-22 21:28:18'),
+(123, 'root@localhost', 'Updated drug: 7', '2025-04-22 21:28:27'),
+(124, 'root@localhost', 'Updated drug: 8', '2025-04-22 21:28:33'),
+(125, 'root@localhost', 'Updated drug: 9', '2025-04-22 21:28:43'),
+(126, 'root@localhost', 'Updated drug: 10', '2025-04-22 21:28:51'),
+(127, 'root@localhost', 'Updated drug: 11', '2025-04-22 21:28:58'),
+(128, 'root@localhost', 'Updated drug: 12', '2025-04-22 21:29:09'),
+(129, 'root@localhost', 'Updated drug: 13', '2025-04-22 21:29:21'),
+(130, 'root@localhost', 'Updated drug: 14', '2025-04-22 21:29:29'),
+(131, 'root@localhost', 'Updated drug: 15', '2025-04-22 21:29:36'),
+(133, 'root@localhost', 'Inserted new visit drug: 19 - 1', '2025-04-23 07:59:12'),
+(134, 'root@localhost', 'Deleted visit drug: 19 - 14', '2025-04-23 08:37:59'),
+(135, 'root@localhost', 'Inserted new payment: 10', '2025-05-04 22:06:24'),
+(136, 'root@localhost', 'Updated visit: 15', '2025-05-04 22:06:24'),
+(137, 'root@localhost', 'Inserted new receipt: 1', '2025-05-04 22:06:24');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `cashier`
+--
+
+CREATE TABLE `cashier` (
+  `cashier_id` int(11) NOT NULL,
+  `cashier_name` varchar(50) NOT NULL,
+  `cashier_username` varchar(50) NOT NULL,
+  `cashier_password` varchar(255) NOT NULL,
+  `clinic_id` int(11) NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `cashier`
+--
+
+INSERT INTO `cashier` (`cashier_id`, `cashier_name`, `cashier_username`, `cashier_password`, `clinic_id`, `is_active`) VALUES
+(1, 'Dewi Lestari', 'dewi123', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 1, 1);
+
+--
+-- Trigger `cashier`
+--
+DELIMITER $$
+CREATE TRIGGER `log_delete_cashier` AFTER DELETE ON `cashier` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Deleted cashier: ', OLD.cashier_id));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_insert_cashier` AFTER INSERT ON `cashier` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Inserted new cashier: ', NEW.cashier_id));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_update_cashier` AFTER UPDATE ON `cashier` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Updated cashier: ', NEW.cashier_id));
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -242,29 +412,30 @@ DELIMITER ;
 CREATE TABLE `drug` (
   `drug_id` int(11) NOT NULL,
   `drug_name` varchar(50) NOT NULL,
-  `drug_usage` varchar(100) NOT NULL
+  `drug_usage` varchar(100) NOT NULL,
+  `price` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data untuk tabel `drug`
 --
 
-INSERT INTO `drug` (`drug_id`, `drug_name`, `drug_usage`) VALUES
-(1, 'Paracetamol', 'Obat penurun panas'),
-(2, 'Amoxicillin', 'Antibiotik'),
-(3, 'Ibuprofen', 'Obat pereda nyeri'),
-(4, 'Dexamethasone', 'Obat antiinflamasi'),
-(5, 'Ranitidine', 'Obat antiasam lambung'),
-(6, 'Omeprazole', 'Obat antasid'),
-(7, 'Loratadine', 'Obat antihistamin'),
-(8, 'Diphenhydramine', 'Obat antialergi'),
-(9, 'Cetirizine', 'Obat antialergi'),
-(10, 'Fexofenadine', 'Obat antialergi'),
-(11, 'Loperamide', 'Obat antidiare'),
-(12, 'Simethicone', 'Obat antikembung'),
-(13, 'Lactulose', 'Obat pencahar'),
-(14, 'Bisacodyl', 'Obat pencahar'),
-(15, 'Psyllium', 'Obat pencahar');
+INSERT INTO `drug` (`drug_id`, `drug_name`, `drug_usage`, `price`) VALUES
+(1, 'Paracetamol', 'Obat penurun panas', 10000.00),
+(2, 'Amoxicillin', 'Antibiotik', 5000.00),
+(3, 'Ibuprofen', 'Obat pereda nyeri', 12000.00),
+(4, 'Dexamethasone', 'Obat antiinflamasi', 25000.00),
+(5, 'Ranitidine', 'Obat antiasam lambung', 7000.00),
+(6, 'Omeprazole', 'Obat antasid', 22000.00),
+(7, 'Loratadine', 'Obat antihistamin', 30000.00),
+(8, 'Diphenhydramine', 'Obat antialergi', 45000.00),
+(9, 'Cetirizine', 'Obat antialergi', 6000.00),
+(10, 'Fexofenadine', 'Obat antialergi', 27000.00),
+(11, 'Loperamide', 'Obat antidiare', 21000.00),
+(12, 'Simethicone', 'Obat antikembung', 39000.00),
+(13, 'Lactulose', 'Obat pencahar', 23500.00),
+(14, 'Bisacodyl', 'Obat pencahar', 47000.00),
+(15, 'Psyllium', 'Obat pencahar', 50000.00);
 
 --
 -- Trigger `drug`
@@ -294,6 +465,88 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `inventory`
+--
+
+CREATE TABLE `inventory` (
+  `inventory_id` int(11) NOT NULL,
+  `drug_id` int(11) NOT NULL,
+  `clinic_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `last_restock_date` date NOT NULL,
+  `expiration_date` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `inventory`
+--
+
+INSERT INTO `inventory` (`inventory_id`, `drug_id`, `clinic_id`, `quantity`, `last_restock_date`, `expiration_date`) VALUES
+(1, 1, 1, 0, '2025-04-01', '2026-04-23'),
+(2, 2, 1, 10, '2025-04-01', '2026-04-23'),
+(3, 3, 1, 50, '2025-04-01', '2026-04-23'),
+(4, 4, 1, 10, '2025-04-01', '2026-04-23'),
+(5, 5, 1, 0, '2025-04-01', '2026-04-23'),
+(6, 6, 2, 10, '2025-04-01', '2026-04-23'),
+(7, 7, 2, 10, '2025-04-01', '2026-04-22'),
+(8, 8, 2, 0, '2025-04-01', '2026-04-23'),
+(9, 9, 2, 0, '2025-04-01', '2026-04-23'),
+(10, 10, 2, 80, '2025-04-01', '2025-08-01'),
+(11, 11, 3, 10, '2025-04-01', '2026-04-23'),
+(12, 12, 3, 10, '2025-04-01', '2025-11-15'),
+(13, 13, 3, 10, '2025-04-01', '2026-04-23'),
+(14, 14, 3, 30, '2025-04-01', '2025-09-01'),
+(15, 15, 3, 20, '2025-04-01', '2025-08-15'),
+(16, 1, 2, 40, '2025-04-01', '2025-12-31'),
+(17, 2, 2, 40, '2025-04-01', '2025-11-30'),
+(18, 3, 2, 10, '2025-04-01', '2026-04-23'),
+(19, 4, 2, 10, '2025-04-01', '2026-04-22'),
+(20, 5, 2, 10, '2025-04-01', '2025-04-06'),
+(21, 10, 1, 10, '2025-04-01', '2026-04-01');
+
+--
+-- Trigger `inventory`
+--
+DELIMITER $$
+CREATE TRIGGER `before_update_inventory_add_stock` BEFORE UPDATE ON `inventory` FOR EACH ROW BEGIN
+    -- Jika obat sudah expired, set quantity = 0 dan perpanjang expired date 1 tahun
+    IF NEW.expiration_date < CURDATE() THEN
+        SET NEW.quantity = 10;  -- Mengubah quantity menjadi 0 untuk obat expired
+        SET NEW.expiration_date = DATE_ADD(CURDATE(), INTERVAL 1 YEAR);  -- Memperpanjang expiration date 1 tahun
+    END IF;
+
+    -- Jika quantity obat <= 5, tambahkan stok sebanyak 10
+    IF NEW.quantity <= 5 AND NEW.quantity > 0 THEN
+        SET NEW.quantity = NEW.quantity + 10;  -- Menambahkan stok jika quantity <= 5 dan lebih dari 0
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_delete_inventory` AFTER DELETE ON `inventory` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Deleted inventory: ', OLD.inventory_id));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_insert_inventory` AFTER INSERT ON `inventory` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Inserted new inventory: ', NEW.inventory_id));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_update_inventory` AFTER UPDATE ON `inventory` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Updated inventory: ', NEW.inventory_id));
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `owners`
 --
 
@@ -316,7 +569,8 @@ INSERT INTO `owners` (`owner_id`, `owner_givenname`, `owner_familyname`, `owner_
 (15, 'eka', 'jaya', 'JL. KOBAR', '084312832374', 0x243279243130244a466f384d3637784f75346137322e334d644b504a4f45366a45363855794b4e6e594e626d4a2e527332456e427079663737777243, 'eka'),
 (16, 'Febrianson', 'Christian', 'JL. SAMUDIN AMAN IV', '0821743952395', 0x243279243130244a484c2e6c4556356a51684876574862477333696a75534a744f7a6b2f617a4f4f45334e3061337035313447504b424b64776d4d36, 'ebi'),
 (17, 'Luniko', 'Jamal', 'JL. BROMO III', '082374375045', 0x24327924313024373155382f2f7678656b526b41714872726551382e6545376642365765674361422e424944682e5054414b7a747655576859373769, 'niko'),
-(18, 'Andika', 'Biasalah', 'JL.RAJAWALI', '082343728537', 0x243279243130244b6c51714e324e62455a6e74743976332e33695978656c626f3446756e387667366b3666764465523247752e616e7647476d544f79, 'dika');
+(18, 'Andika', 'Biasalah', 'JL.RAJAWALI', '082343728537', 0x243279243130244b6c51714e324e62455a6e74743976332e33695978656c626f3446756e387667366b3666764465523247752e616e7647476d544f79, 'dika'),
+(20, 'arby', 'liming', 'JL. TERSERAH', '082254892043', 0x243279243130244a4559724b352e616c6f715470586136627250386c2e574c796173683631464a334831695436585947335a70466e5171494b46446d, 'arby');
 
 --
 -- Trigger `owners`
@@ -339,6 +593,106 @@ DELIMITER $$
 CREATE TRIGGER `log_update_owner` AFTER UPDATE ON `owners` FOR EACH ROW BEGIN
     INSERT INTO audit_log (user, action)
     VALUES (USER(), CONCAT('Updated owner: ', NEW.owner_id));
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `payment`
+--
+
+CREATE TABLE `payment` (
+  `payment_id` int(11) NOT NULL,
+  `visit_id` int(11) NOT NULL,
+  `cashier_id` int(11) NOT NULL,
+  `payment_date` date NOT NULL,
+  `payment_amount` int(11) NOT NULL,
+  `payment_method` enum('Cash','Credit Card','Debit Card','Transfer') NOT NULL,
+  `payment_status` enum('Paid','Unpaid') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `payment`
+--
+
+INSERT INTO `payment` (`payment_id`, `visit_id`, `cashier_id`, `payment_date`, `payment_amount`, `payment_method`, `payment_status`) VALUES
+(10, 15, 1, '2025-05-04', 100000, 'Cash', 'Paid');
+
+--
+-- Trigger `payment`
+--
+DELIMITER $$
+CREATE TRIGGER `log_delete_payment` AFTER DELETE ON `payment` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Deleted payment: ', OLD.payment_id));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_insert_payment` AFTER INSERT ON `payment` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Inserted new payment: ', NEW.payment_id));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_update_payment` AFTER UPDATE ON `payment` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Updated payment: ', NEW.payment_id));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trg_update_visit_status_after_payment` AFTER INSERT ON `payment` FOR EACH ROW BEGIN
+    UPDATE visit SET visit_status = 'Paid' WHERE visit_id = NEW.visit_id;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `receipt`
+--
+
+CREATE TABLE `receipt` (
+  `receipt_id` int(11) NOT NULL,
+  `payment_id` int(11) NOT NULL,
+  `receipt_number` varchar(20) NOT NULL,
+  `issue_date` date NOT NULL,
+  `total_amount` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `receipt`
+--
+
+INSERT INTO `receipt` (`receipt_id`, `payment_id`, `receipt_number`, `issue_date`, `total_amount`) VALUES
+(1, 10, 'R-20250504-10', '2025-05-04', 450000);
+
+--
+-- Trigger `receipt`
+--
+DELIMITER $$
+CREATE TRIGGER `log_delete_receipt` AFTER DELETE ON `receipt` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Deleted receipt: ', OLD.receipt_id));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_insert_receipt` AFTER INSERT ON `receipt` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Inserted new receipt: ', NEW.receipt_id));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `log_update_receipt` AFTER UPDATE ON `receipt` FOR EACH ROW BEGIN
+    INSERT INTO audit_log (user, action)
+    VALUES (USER(), CONCAT('Updated receipt: ', NEW.receipt_id));
 END
 $$
 DELIMITER ;
@@ -504,20 +858,21 @@ CREATE TABLE `visit` (
   `visit_notes` varchar(200) NOT NULL,
   `animal_id` int(11) NOT NULL,
   `vet_id` int(11) NOT NULL,
-  `from_visit_id` int(11) DEFAULT NULL
+  `from_visit_id` int(11) DEFAULT NULL,
+  `visit_status` enum('Unpaid','Paid') DEFAULT 'Unpaid'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data untuk tabel `visit`
 --
 
-INSERT INTO `visit` (`visit_id`, `visit_date_time`, `visit_notes`, `animal_id`, `vet_id`, `from_visit_id`) VALUES
-(15, '2025-04-03', 'Periksa Kesehatan Bulu', 16, 1, NULL),
-(16, '2025-04-10', 'Perisa lanjutan', 16, 1, 15),
-(17, '2025-03-17', 'Operasi karena luka saat berkelahi dengan pemiliknya', 20, 2, NULL),
-(18, '2025-02-20', 'Perisa kesehatan gigi', 18, 5, NULL),
-(19, '2025-04-15', 'Suntik Vaksin', 21, 3, NULL),
-(20, '2025-04-15', 'Kontrol gizi', 17, 6, NULL);
+INSERT INTO `visit` (`visit_id`, `visit_date_time`, `visit_notes`, `animal_id`, `vet_id`, `from_visit_id`, `visit_status`) VALUES
+(15, '2025-04-03', 'Periksa Kesehatan Bulu', 16, 1, NULL, 'Paid'),
+(16, '2025-04-10', 'Perisa lanjutan', 16, 1, 15, 'Unpaid'),
+(17, '2025-03-17', 'Operasi karena luka saat berkelahi dengan pemiliknya', 20, 2, NULL, 'Unpaid'),
+(18, '2025-02-20', 'Perisa kesehatan gigi', 18, 5, NULL, 'Unpaid'),
+(19, '2025-04-15', 'Suntik Vaksin', 21, 3, NULL, 'Unpaid'),
+(20, '2025-04-15', 'Kontrol gizi', 17, 6, NULL, 'Unpaid');
 
 --
 -- Trigger `visit`
@@ -651,7 +1006,7 @@ CREATE TABLE `visit_drug` (
 
 INSERT INTO `visit_drug` (`visit_id`, `drug_id`, `visit_drug_dose`, `visit_drug_frequency`, `visit_drug_qtysupplied`) VALUES
 (15, 8, '1/2 tablet', '3x sehari', 10),
-(19, 14, '1 ml', '1x', 1);
+(19, 1, '2 ml', '2 x sehari', 10);
 
 --
 -- Trigger `visit_drug`
@@ -703,6 +1058,13 @@ ALTER TABLE `audit_log`
   ADD PRIMARY KEY (`log_id`);
 
 --
+-- Indeks untuk tabel `cashier`
+--
+ALTER TABLE `cashier`
+  ADD PRIMARY KEY (`cashier_id`),
+  ADD KEY `clinic_id` (`clinic_id`);
+
+--
 -- Indeks untuk tabel `clinic`
 --
 ALTER TABLE `clinic`
@@ -715,10 +1077,34 @@ ALTER TABLE `drug`
   ADD PRIMARY KEY (`drug_id`);
 
 --
+-- Indeks untuk tabel `inventory`
+--
+ALTER TABLE `inventory`
+  ADD PRIMARY KEY (`inventory_id`),
+  ADD UNIQUE KEY `unique_clinic_drug` (`clinic_id`,`drug_id`),
+  ADD KEY `drug_id` (`drug_id`),
+  ADD KEY `clinic_id` (`clinic_id`);
+
+--
 -- Indeks untuk tabel `owners`
 --
 ALTER TABLE `owners`
   ADD PRIMARY KEY (`owner_id`);
+
+--
+-- Indeks untuk tabel `payment`
+--
+ALTER TABLE `payment`
+  ADD PRIMARY KEY (`payment_id`),
+  ADD KEY `visit_id` (`visit_id`),
+  ADD KEY `cashier_id` (`cashier_id`);
+
+--
+-- Indeks untuk tabel `receipt`
+--
+ALTER TABLE `receipt`
+  ADD PRIMARY KEY (`receipt_id`),
+  ADD KEY `payment_id` (`payment_id`);
 
 --
 -- Indeks untuk tabel `specialisation`
@@ -777,7 +1163,13 @@ ALTER TABLE `animal_type`
 -- AUTO_INCREMENT untuk tabel `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=138;
+
+--
+-- AUTO_INCREMENT untuk tabel `cashier`
+--
+ALTER TABLE `cashier`
+  MODIFY `cashier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `clinic`
@@ -792,10 +1184,28 @@ ALTER TABLE `drug`
   MODIFY `drug_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
+-- AUTO_INCREMENT untuk tabel `inventory`
+--
+ALTER TABLE `inventory`
+  MODIFY `inventory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
 -- AUTO_INCREMENT untuk tabel `owners`
 --
 ALTER TABLE `owners`
-  MODIFY `owner_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `owner_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT untuk tabel `payment`
+--
+ALTER TABLE `payment`
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT untuk tabel `receipt`
+--
+ALTER TABLE `receipt`
+  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `specialisation`
@@ -825,6 +1235,32 @@ ALTER TABLE `visit`
 ALTER TABLE `animal`
   ADD CONSTRAINT `animal_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `owners` (`owner_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `animal_ibfk_2` FOREIGN KEY (`at_id`) REFERENCES `animal_type` (`at_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `cashier`
+--
+ALTER TABLE `cashier`
+  ADD CONSTRAINT `cashier_ibfk_1` FOREIGN KEY (`clinic_id`) REFERENCES `clinic` (`clinic_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `inventory`
+--
+ALTER TABLE `inventory`
+  ADD CONSTRAINT `inventory_ibfk_1` FOREIGN KEY (`drug_id`) REFERENCES `drug` (`drug_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventory_ibfk_2` FOREIGN KEY (`clinic_id`) REFERENCES `clinic` (`clinic_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `payment`
+--
+ALTER TABLE `payment`
+  ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`visit_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`cashier_id`) REFERENCES `cashier` (`cashier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `receipt`
+--
+ALTER TABLE `receipt`
+  ADD CONSTRAINT `receipt_ibfk_1` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`payment_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ketidakleluasaan untuk tabel `spec_visit`

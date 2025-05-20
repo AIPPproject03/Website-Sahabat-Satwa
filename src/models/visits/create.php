@@ -1,4 +1,5 @@
 <?php
+// filepath: d:\AIPPROJECT03\TUGAS WEB\Website Sahabat Satwa\src\models\visits\create.php
 include '../../connection/conn.php';
 
 $role = $_GET['role'] ?? 'admin'; // Default ke 'admin' jika parameter role tidak ada
@@ -9,9 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $animal_id = $_POST['animal_id'];
     $vet_id = $_POST['vet_id'];
     $from_visit_id = $_POST['from_visit_id'] ?? 'NULL'; // Jika tidak ada kunjungan sebelumnya, set NULL
+    $visit_status = $_POST['visit_status']; // Ambil status kunjungan dari form
 
-    $sql = "INSERT INTO visit (visit_date_time, visit_notes, animal_id, vet_id, from_visit_id) 
-            VALUES ('$visit_date_time', '$visit_notes', $animal_id, $vet_id, $from_visit_id)";
+    $sql = "INSERT INTO visit (visit_date_time, visit_notes, animal_id, vet_id, from_visit_id, visit_status) 
+            VALUES ('$visit_date_time', '$visit_notes', $animal_id, $vet_id, $from_visit_id, '$visit_status')";
     if ($conn->query($sql) === TRUE) {
         // Redirect berdasarkan role
         if ($role === 'vet') {
@@ -75,6 +77,12 @@ $previous_visits = $conn->query("SELECT visit_id, visit_date_time FROM visit ORD
                 <?php while ($visit = $previous_visits->fetch_assoc()): ?>
                     <option value="<?= $visit['visit_id'] ?>">ID <?= $visit['visit_id'] ?> - <?= $visit['visit_date_time'] ?></option>
                 <?php endwhile; ?>
+            </select>
+
+            <label for="visit_status">Status Kunjungan:</label>
+            <select id="visit_status" name="visit_status" required>
+                <option value="Unpaid">Unpaid</option>
+                <option value="Paid">Paid</option>
             </select>
 
             <div class="actions">

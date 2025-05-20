@@ -1,15 +1,18 @@
 <?php
+// filepath: d:\AIPPROJECT03\TUGAS WEB\Website Sahabat Satwa\src\models\drug\create.php
 include '../../connection/conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $drug_name = $_POST['drug_name'];
     $drug_usage = $_POST['drug_usage'];
+    $price = $_POST['price'];
 
-    $sql = "INSERT INTO drug (drug_name, drug_usage) VALUES ('$drug_name', '$drug_usage')";
+    $sql = "INSERT INTO drug (drug_name, drug_usage, price) VALUES ('$drug_name', '$drug_usage', $price)";
     if ($conn->query($sql) === TRUE) {
         header("Location: index.php");
+        exit();
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        $error_message = "Error: " . $sql . "<br>" . $conn->error;
     }
 }
 ?>
@@ -27,12 +30,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <div class="container">
         <h1>Tambah Obat Baru</h1>
+
+        <?php if (isset($error_message)): ?>
+            <div class="error-message"><?= $error_message ?></div>
+        <?php endif; ?>
+
         <form method="POST">
             <label for="drug_name">Nama Obat:</label>
             <input type="text" id="drug_name" name="drug_name" required>
 
             <label for="drug_usage">Penggunaan:</label>
             <input type="text" id="drug_usage" name="drug_usage" required>
+
+            <label for="price">Harga (Rp):</label>
+            <input type="number" id="price" name="price" min="0" required>
 
             <div class="actions">
                 <button type="submit" class="btn btn-add">Simpan</button>

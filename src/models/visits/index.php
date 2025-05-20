@@ -6,6 +6,7 @@ $sql = "SELECT
             visit.visit_id, 
             visit.visit_date_time, 
             visit.visit_notes, 
+            visit.visit_status, 
             animal.animal_name, 
             vet.vet_givenname, 
             vet.vet_familyname 
@@ -25,19 +26,14 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Kunjungan</title>
     <link rel="stylesheet" href="../../../public/assets/css/style.css">
-    <script src="../../../public/assets/js/script.js" defer></script>
 </head>
 
 <body>
     <div class="container">
         <h1>Daftar Kunjungan</h1>
         <div class="actions">
-            <a href="create.php" class="btn btn-add">
-                <span class="icon">➕</span> Tambah Kunjungan Baru
-            </a>
-            <a href="../../pages/dashboard_admin.php" class="btn btn-back">
-                <span class="icon">🏠</span> Kembali ke Menu Utama
-            </a>
+            <a href="create.php" class="btn btn-add">➕ Tambah Kunjungan Baru</a>
+            <a href="../../pages/dashboard_admin.php" class="btn btn-back">🏠 Kembali ke Dashboard</a>
         </div>
         <br>
 
@@ -48,6 +44,7 @@ $result = $conn->query($sql);
                         <th>ID Kunjungan</th>
                         <th>Tanggal Kunjungan</th>
                         <th>Catatan</th>
+                        <th>Status</th>
                         <th>Nama Hewan</th>
                         <th>Dokter</th>
                         <th>Aksi</th>
@@ -59,6 +56,7 @@ $result = $conn->query($sql);
                             <td><?= htmlspecialchars($row['visit_id']) ?></td>
                             <td><?= htmlspecialchars($row['visit_date_time']) ?></td>
                             <td><?= htmlspecialchars($row['visit_notes']) ?></td>
+                            <td><?= htmlspecialchars($row['visit_status']) ?></td>
                             <td><?= htmlspecialchars($row['animal_name']) ?></td>
                             <td><?= htmlspecialchars($row['vet_givenname'] . ' ' . $row['vet_familyname']) ?></td>
                             <td>
