@@ -53,6 +53,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 } else {
                     $error_message = "Username tidak ditemukan di tabel vet.";
                 }
+            } elseif ($role === 'cashier') {
+                // Cek username di tabel cashier
+                $cashier_sql = "SELECT cashier_id FROM cashier WHERE cashier_username = '$username' AND is_active = 1";
+                $cashier_result = $conn->query($cashier_sql);
+
+                if ($cashier_result && $cashier_row = $cashier_result->fetch_assoc()) {
+                    $_SESSION['cashier_id'] = $cashier_row['cashier_id']; // Simpan cashier_id ke session
+                    header("Location: dashboard_cashier.php");
+                } else {
+                    $error_message = "Username tidak ditemukan di tabel cashier atau akun tidak aktif.";
+                }
             } else {
                 $error_message = "Peran tidak dikenali.";
             }
@@ -63,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } catch (Exception $e) {
         // Tangani kesalahan login
         $error_message = "Username atau password salah.";
-        // Pesan Error Sebenarnya
+        // Pesan Error Sebenarnya untuk debugging
         $error_message = "Terjadi kesalahan: " . $e->getMessage();
     }
 }

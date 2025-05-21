@@ -1,5 +1,15 @@
 <?php
+session_start();
 include '../../connection/conn.php';
+
+// Periksa apakah pengguna sudah login
+if (!isset($_SESSION['logged_in'])) {
+    header("Location: ../../pages/login.php");
+    exit();
+}
+
+// Periksa role pengguna dan tentukan dashboard tujuan
+$redirect_dashboard = ($_SESSION['role'] === 'cashier') ? "../../pages/dashboard_cashier.php" : "../../pages/dashboard_admin.php";
 
 // Query untuk mengambil data dari tabel receipt
 $sql = "SELECT 
@@ -33,7 +43,7 @@ $result = $conn->query($sql);
         <h1>Daftar Kwitansi</h1>
         <div class="actions">
             <a href="create.php" class="btn btn-add">➕ Tambah Kwitansi Baru</a>
-            <a href="../../pages/dashboard_admin.php" class="btn btn-back">🏠 Kembali ke Dashboard</a>
+            <a href="<?= $redirect_dashboard ?>" class="btn btn-back">🏠 Kembali ke Dashboard</a>
         </div>
         <br>
 

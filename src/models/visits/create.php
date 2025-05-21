@@ -9,9 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $visit_notes = $_POST['visit_notes'];
     $animal_id = $_POST['animal_id'];
     $vet_id = $_POST['vet_id'];
-    $from_visit_id = $_POST['from_visit_id'] ?? 'NULL'; // Jika tidak ada kunjungan sebelumnya, set NULL
+    $from_visit_id = empty($_POST['from_visit_id']) ? 'NULL' : $_POST['from_visit_id']; // Set to NULL if empty
     $visit_status = $_POST['visit_status']; // Ambil status kunjungan dari form
 
+    // Corrected SQL query
     $sql = "INSERT INTO visit (visit_date_time, visit_notes, animal_id, vet_id, from_visit_id, visit_status) 
             VALUES ('$visit_date_time', '$visit_notes', $animal_id, $vet_id, $from_visit_id, '$visit_status')";
     if ($conn->query($sql) === TRUE) {
